@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+  
+    <h1>Conversor de divisas</h1>
+    <div id="currency-form" class="container shadow p-3 mt-3 bg-info-subtle rounded">
+      {{ form_start(form) }}
+        <div class="row justify-content-around">
+          <div class="col-auto">
+            {{ form_label(form.ammount) }}
+            {{ form_widget(form.ammount) }}
+          </div>
+
+          <div class="col-auto">
+            {{ form_label(form.from) }}
+            {{ form_widget(form.from) }}
+          </div>
+
+          <div class="col-auto">
+            {{ form_label(form.to) }}
+            {{ form_widget(form.to) }}
+          </div>
+        </div>
+
+        <div class="row align-middle mt-3">
+          <div class="col-9">
+            <p class="mb-0">EUR Euro =</p>
+            <h3>0,00 Dólares estadounidenses</h3>
+          </div>
+          
+          <div class="col-3 mt-2 text-end">
+            {{ form_row(form.submit) }}
+          </div>
+        
+        </div>
+      {{ form_end(form) }}
+
+  </div>
+{% endblock %}
+
