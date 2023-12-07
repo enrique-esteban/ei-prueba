@@ -12,30 +12,56 @@ use App\Form\CurrencyCalculatorForm;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function getCurrencies(CurrencyService $cs, Request $request): Response
+    public function homeController(CurrencyService $cs, Request $request): Response
     {
         $currencies = $cs->getCurrencies();
-        $form = $this->createForm(CurrencyCalculatorForm::class);
+
+        if ($currencies['error_code'] !== 0) {
+            return $this->render('home.html.twig', [
+                'form' => null,
+                'data' => null,
+            ]);
+        }
+
+        $form = $this->createForm(CurrencyCalculatorForm::class, ['currencies' => $currencies['list']]);
         $data = null;
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-
-
             $data = $form->getData();
 
-            dump($data);
+            $exchangeAmmount = $cs->getCurrencyRate($data['from']->getSlug(), $data['to']->getSlug(), $data['ammount']);
 
-            /// return $this->redirectToRoute('task_success');
+            if ($exchangeAmmount['error_code'] === 1) {
+                return $this->render('home.html.twig', [
+                    'form' => null,
+                    'data' => null,
+                ]);
+            }
+
+            $data = [
+                'original_ammount' => $data['ammount'],
+                'exchange_ammount' => $exchangeAmmount['price'],
+                'from_text' => $this->getCompleteName($data['from']->getSlug(), $currencies['list']),
+                'to_text' => $this->getCompleteName($data['to']->getSlug(), $currencies['list']),
+            ];
         }
 
-
         return $this->render('home.html.twig', [
-            'currencies' => $currencies,
             'form' => $form,
             'data' => $data
         ]);
+    }
+
+    private function getCompleteName($slug, $currencies): string
+    {
+        foreach ($currencies as $value) {
+            if ($value->getSlug() === $slug) {
+                return strtoupper($value->getSlug()) . ' ' . $value->getName();
+            }
+        }
+
+        return "";
     }
 }

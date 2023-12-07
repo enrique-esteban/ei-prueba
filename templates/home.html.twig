@@ -1,40 +1,92 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+  <div id="currency-form" class="container p-0 mt-3">
+
   
-    <h1>Conversor de divisas</h1>
-    <div id="currency-form" class="container shadow p-3 mt-3 bg-info-subtle rounded">
-      {{ form_start(form) }}
-        <div class="row justify-content-around">
-          <div class="col-auto">
-            {{ form_label(form.ammount) }}
-            {{ form_widget(form.ammount) }}
-          </div>
-
-          <div class="col-auto">
-            {{ form_label(form.from) }}
-            {{ form_widget(form.from) }}
-          </div>
-
-          <div class="col-auto">
-            {{ form_label(form.to) }}
-            {{ form_widget(form.to) }}
+    {% if form is null %}
+      <div class="modal d-block bg-black bg-opacity-75" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">D'oh! An unexpected error has occurred</h5>
+            </div>
+            <div class="modal-body">
+              <p>We are sorry for the inconvenience, please refresh the page.</p>
+              <p>If the problem persists, please contact with a site administrator, thank you.</p>
+            </div>
           </div>
         </div>
+      </div>
+    {% else %}
 
-        <div class="row align-middle mt-3">
-          <div class="col-9">
-            <p class="mb-0">EUR Euro =</p>
-            <h3>0,00 Dólares estadounidenses</h3>
-          </div>
+      <div class="card shadow">
+        <div class="card-header bg-primary-subtle">
+          <h3>Currency converter</h3>
+        </div>
+
+        <div class="card-body bg-light">
+          <p class="card-text fs-5">It is very simple! Type a number in the text box (ammount), select the currencies and press the calculate button.</p>
           
-          <div class="col-3 mt-2 text-end">
-            {{ form_row(form.submit) }}
-          </div>
-        
-        </div>
-      {{ form_end(form) }}
+          {{ form_start(form, {'attr': {'id': 'form_currency_calculator'}}) }}
+            <div class="row justify-content-around">
+              <div class="col-5">
+                {{ form_label(form.ammount) }}
+                {{ form_widget(form.ammount) }}
+              </div>
 
+              <div class="col-3">
+                {{ form_label(form.from) }}
+                {{ form_widget(form.from) }}
+              </div>
+
+              <div class="col-1 text-center">
+                <button id="change-between" style="position: relative;top: 31px !important;" type="button" class="btn btn-outline-primary">< ></button>
+              </div>
+
+              <div class="col-3">
+                {{ form_label(form.to) }}
+                {{ form_widget(form.to) }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-auto">
+                {{ form_errors(form.ammount) }}
+              </div>
+            </div>
+
+            <div class="row align-middle mt-3">
+              <div class="col-9">
+              {% if data is not null %}
+                  <p class="mb-0">{{ data.original_ammount ~ ' ' ~ data.from_text }} =</p>
+                  <h3>{{ data.exchange_ammount ~ ' ' ~ data.to_text }}</h3>
+                {% endif %}
+              </div>
+              
+              <div class="col-3 mt-2 text-end">
+                {{ form_row(form.submit) }}
+              </div>
+            </div>
+            <div class="row pb-0 mb-0">
+              <p class="fs-6 fw-lighter">* Required fields.</p>
+            </div>
+          </div>
+        {{ form_end(form) }}
+      </div>
+    {% endif %}
   </div>
 {% endblock %}
+
+{% block jsFoot %}
+  <script>
+      document.getElementById("change-between").onclick = () => {
+        let selectsArray = document.getElementsByTagName("select");
+        let oldFirstValue = selectsArray[0].value;
+
+        selectsArray[0].value = selectsArray[1].value;
+        selectsArray[1].value = oldFirstValue;
+      };
+  </script>
+ {% endblock %}
 
